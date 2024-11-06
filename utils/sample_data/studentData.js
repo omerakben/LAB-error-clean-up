@@ -1,5 +1,3 @@
-// utils/data/studentData.js
-
 // Data arrays
 const students = [];
 const voldysArmy = [];
