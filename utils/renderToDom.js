@@ -1,5 +1,3 @@
-// utils/renderToDom.js
-
 /**
  * Renders content to the specified DOM element
  * @param {string} divId - The ID of the element to render to (including # for ID selector)

@@ -1,4 +1,4 @@
-// Import styles (if needed)
+// Import styles
 import '../styles/main.scss';
 
 // Import Components

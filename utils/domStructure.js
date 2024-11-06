@@ -1,9 +1,7 @@
 // utils/domStructure.js
 import renderToDom from './renderToDom';
 
-/**
- * Creates the initial HTML structure for the application
- */
+// Creates the initial HTML structure for the application
 const htmlStructure = () => {
   const domString = `
     <div id="header-container" class="header mb-3"></div>
@@ -15,9 +13,7 @@ const htmlStructure = () => {
   renderToDom('#app', domString);
 };
 
-/**
- * Renders the initial student areas
- */
+// Renders the initial student areas
 const studentAreas = () => {
   const domString = `
     <div id="students">No Students</div>
@@ -63,9 +59,7 @@ const studentsOnDom = (divId, array, house = 'Hogwarts') => {
   renderToDom(divId, domString);
 };
 
-/**
- * Creates the filter button row
- */
+// Creates the filter button row
 const filterBtnRow = () => {
   const domString = `
     <div class="btn-group" role="group" aria-label="Basic example">
