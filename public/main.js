@@ -1,212 +1,41 @@
-import '../styles/main.scss'; // You have to import your styles for them to work. Uncomment this line if needed.
+// Import styles (if needed)
+import '../styles/main.scss';
 
-// Global Variables
-const students = [];
-const voldysArmy = []; // starts as an empty array
+// Import Components
+import header from '../components/header';
+import { startSortingBtn, form } from '../components/sortingForm';
+import { filterBtnRow, handleFilterEvents } from '../components/filterButtons';
+import { initializeStudentAreas, handleExpelEvents } from '../components/studentDisplay';
 
-// Houses Data
-const houses = [
-  {
-    house: 'gryffindor',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/1/16/Gryffindor_crest.png'
-  },
-  {
-    house: 'slytherin',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/4/45/Slytherin_Crest.png'
-  },
-  {
-    house: 'hufflepuff',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/5/5e/Hufflepuff_crest.png'
-  },
-  {
-    house: 'ravenclaw',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/4/4f/Ravenclaw_crest.png'
-  }
-];
+// Import DOM Structure
+import { htmlStructure } from '../utils/domStructure';
 
-// Utility Functions
-const renderToDOM = (divId, content) => {
-  const selectedDiv = document.querySelector(divId);
-  selectedDiv.innerHTML = content;
-};
-
-const createId = (array) => {
-  if (array.length) {
-    const idArray = array.map((el) => el.id);
-    return Math.max(...idArray) + 1;
-  }
-  return 0;
-};
-
-// HTML Components
-const htmlStructure = () => {
-  const domString = `
-    <div id="header-container" class="header mb-3"></div>
-    <div id="form-container" class="container mb-3 text-center"></div>
-    <div id="filter-container" class="container mb-3"></div>
-    <div id="student-container" class="container d-flex"></div>
-  `;
-
-  renderToDOM('#app', domString);
-};
-
-const header = () => {
-  const domString = `<div class="container">
-    <h1>Welcome to Hoggy Hogwarts Sorting Hat!</h1>
-    <p>
-      Hmm, difficult. VERY difficult. <br />Plenty of courage, I see.
-      <br />Not a bad mind, either. There's talent, oh yes. <br />And a
-      thirst to prove yourself. <br />But where to put you?
-    </p>
-  </div>`;
-
-  renderToDOM('#header-container', domString);
-};
-
-const startSortingBtn = () => {
-  const domString = '<button type="button" class="btn btn-info" id="start-sorting">Start the Sorting Ceremony!</button>';
-
-  renderToDOM('#form-container', domString);
-};
-
-const studentAreas = () => {
-  const domString = `<div id="students">No Students</div>
-    <div id="voldy">No Death Eaters</div>`;
-
-  renderToDOM('#student-container', domString);
-};
-
-const studentsOnDom = (divId, array, house = 'Hogwarts') => {
-  let domString = '';
-  if (!array.length) {
-    domString += `NO ${house.toUpperCase()} STUDENTS`;
-  }
-
-  array.forEach((student) => {
-    domString += `
-      <div class="card bg-dark text-white">
-        <img src="${
-  divId === '#voldy'
-    ? 'https://carboncostume.com/wordpress/wp-content/uploads/2019/10/deatheater-harrypotter.jpg'
-    : student.crest
-}"
-          class="card-img" alt="${student.house} crest">
-        <div class="card-img-overlay">
-          <h5 class="card-title">${student.name}</h5>
-          ${
-  divId === '#voldy'
-    ? '<p class="card-text">Death Eater</p>'
-    : ` <p class="card-text">${student.house}</p>
-                <button type="button" id="expel--${student.id}" class="btn btn-danger btn-sm">Expel</button>`
-}
-        </div>
-      </div>
-    `;
-  });
-  renderToDOM(divId, domString);
-};
-
-const filterBtnRow = () => {
-  const domString = `<div class="btn-group" role="group" aria-label="Basic example">
-      <button type="button" id="filter--hufflepuff" class="btn btn-warning btn-sm">Hufflepuff</button>
-      <button type="button" class="btn btn-primary btn-sm" id="filter--ravenclaw">Ravenclaw</button>
-      <button type="button" class="btn btn-success btn-sm" id="filter--slytherin">Slytherin</button>
-      <button type="button" class="btn btn-danger btn-sm" id="filter--gryffindor">Gryffindor</button>
-      <button type="button" class="btn btn-secondary btn-sm" id="filter--all">All</button>
-    </div>`;
-
-  renderToDOM('#filter-container', domString);
-};
-
-// Logic Functions
-const sortStudent = (e) => {
-  e.preventDefault();
-  const sortingHat = houses[Math.floor(Math.random() * houses.length)];
-
-  const studentInput = document.querySelector('#student-name');
-
-  // create the new student object
-  students.push({
-    id: createId(students),
-    name: studentInput.value,
-    house: sortingHat.house,
-    crest: sortingHat.crest
-  });
-
-  studentInput.value = ''; // reset value of input
-  studentsOnDom('#students', students);
-};
-
-const form = () => {
-  const domString = `<form id="sorting" class="d-flex flex-column form-floating">
-      <input
-        type="text"
-        class="form-control mb-1"
-        id="student-name"
-        placeholder="Enter a name"
-        required
-      />
-      <label for="student-name">Name to be sorted</label>
-      <button type="submit" class="btn btn-success">Get Sorted!</button>
-    </form>`;
-
-  renderToDOM('#form-container', domString);
-
-  // Event listener for form submission
-  document.querySelector('#sorting').addEventListener('submit', sortStudent);
-};
-
+// Main Events Handler
 const events = () => {
   // Event listener for starting the sorting ceremony
   document.querySelector('#start-sorting').addEventListener('click', () => {
-    form(); // form
-    filterBtnRow(); // filter buttons
-    studentAreas(); // students and Voldy's army divs
-
-    // Event listeners for expelling students and filtering
-    document
-      .querySelector('#student-container')
-      .addEventListener('click', (e) => {
-        if (e.target.id.includes('expel')) {
-          const [, id] = e.target.id.split('--');
-          const index = students.findIndex(
-            (student) => student.id === Number(id)
-          );
-          // Move from one array to another
-          voldysArmy.push(...students.splice(index, 1));
-          // Get both sets of students on the DOM
-          studentsOnDom('#students', students);
-          studentsOnDom('#voldy', voldysArmy);
-        }
-      });
-
-    document.querySelector('#filter-container').addEventListener('click', (e) => {
-      if (e.target.id.includes('filter')) {
-        const [, house] = e.target.id.split('--');
-
-        if (house === 'all') {
-          studentsOnDom('#students', students);
-        } else if (house) {
-          const filter = students.filter(
-            (student) => student.house === house
-          );
-          studentsOnDom('#students', filter, house);
-        }
-      }
-    });
+    form(); // Display the sorting form
+    filterBtnRow(); // Display filter buttons
+    initializeStudentAreas(); // Initialize student display areas
   });
+
+  // Event delegation for student container (expel actions)
+  document
+    .querySelector('#student-container')
+    .addEventListener('click', handleExpelEvents);
+
+  // Event delegation for filter buttons
+  document
+    .querySelector('#filter-container')
+    .addEventListener('click', handleFilterEvents);
 };
 
 // Initialize App
 const startApp = () => {
-  htmlStructure(); // always load first
-  header();
-  startSortingBtn();
-  events(); // always load last
+  htmlStructure(); // Create initial DOM structure
+  header(); // Load header
+  startSortingBtn(); // Show start sorting button
+  events(); // Add event listeners
 };
 
 startApp();
